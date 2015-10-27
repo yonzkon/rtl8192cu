@@ -277,6 +277,13 @@ static int	rtw_proc_cnt = 0;
 
 #define RTW_PROC_NAME DRV_NAME
 
+#ifndef create_proc_entry
+
+void rtw_proc_init_one(struct net_device *dev) {}
+void rtw_proc_remove_one(struct net_device *dev) {}
+
+#else
+
 void rtw_proc_init_one(struct net_device *dev)
 {
 	struct proc_dir_entry *dir_dev = NULL;
@@ -330,7 +337,7 @@ void rtw_proc_init_one(struct net_device *dev)
 			return;
 		}
 		entry->write_proc = proc_set_log_level;
-		
+
 #ifdef DBG_MEM_ALLOC
 		entry = create_proc_read_entry("mstat", S_IFREG | S_IRUGO,
 				   rtw_proc, proc_get_mstat, dev);
@@ -751,6 +758,7 @@ void rtw_proc_remove_one(struct net_device *dev)
 		}
 	}
 }
+#endif
 #endif
 
 uint loadparam( _adapter *padapter,  _nic_hdl	pnetdev);
@@ -1318,7 +1326,7 @@ void devobj_deinit(struct dvobj_priv *pdvobj)
 	_rtw_mutex_free(&pdvobj->setbw_mutex);
 
 	rtw_mfree((u8*)pdvobj, sizeof(*pdvobj));
-}	
+}
 
 u8 rtw_reset_drv_sw(_adapter *padapter)
 {
@@ -1442,7 +1450,7 @@ _func_enter_;
 	}
 	// add for CONFIG_IEEE80211W, none 11w also can use
 	_rtw_spinlock_init(&padapter->security_key_mutex);
-	
+
 	// We don't need to memset padapter->XXX to zero, because adapter is allocated by rtw_zvmalloc().
 	//_rtw_memset((unsigned char *)&padapter->securitypriv, 0, sizeof (struct security_priv));
 
@@ -1572,7 +1580,7 @@ u8 rtw_free_drv_sw(_adapter *padapter)
 	#endif
 	// add for CONFIG_IEEE80211W, none 11w also can use
 	_rtw_spinlock_free(&padapter->security_key_mutex);
-	
+
 #ifdef CONFIG_BR_EXT
 	_rtw_spinlock_free(&padapter->br_ext_lock);
 #endif	// CONFIG_BR_EXT
