@@ -1,0 +1,7 @@
+// .gitignore
+
+*.o
+*.o.cmd
+*.mod
+*.mod.c
+*.ko
